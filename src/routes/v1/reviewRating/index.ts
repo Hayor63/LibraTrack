@@ -40,11 +40,11 @@ reviewRatingRoutes.get(
   ReviewsByIdHandler
 );
 
-//delete Review
-reviewRatingRoutes.delete(
-  "/:id",
-  authenticateUser,
-  validate(deleteSingleReviewSchema),
-  deleteReviewHandler
-);
+// //delete Review
+// reviewRatingRoutes.delete(
+//   "/:id",
+//   authenticateUser,
+//   validate(deleteSingleReviewSchema),
+//   deleteReviewHandler
+// );
 export default reviewRatingRoutes;

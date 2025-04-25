@@ -6,6 +6,7 @@ import categoryRoutes from "./category";
 import genreRoutes from "./genre";
 import bookReservationRoutes from "./bookReservation";
 import reviewRatingRoutes from "./reviewRating";
+import borrowingRoutes from "./bookBorrowing";
 
 const router = Router()
 router.use("/users", userRoutes);
@@ -15,5 +16,6 @@ router.use("/category", categoryRoutes);
 router.use("/genre", genreRoutes);
 router.use("/bookReservation", bookReservationRoutes);
 router.use("/reviews", reviewRatingRoutes);
+router.use("/borrowing", borrowingRoutes);
 
 export default router
