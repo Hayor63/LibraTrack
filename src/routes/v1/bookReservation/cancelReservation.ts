@@ -12,7 +12,7 @@ const cancelReservationHandler = async (req: Request, res: Response) => {
       return APIResponse.error("Reservation not found", 404).send(res);
     }
 
-    // Optional: Prevent canceling already canceled reservation
+    //Prevent canceling already canceled reservation
     if (reservation.status === "canceled") {
       return APIResponse.error("Reservation is already canceled", 400).send(res);
     }

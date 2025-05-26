@@ -14,10 +14,7 @@ const createBorrowingHandler = async (
   res: Response
 ) => {
   try {
-    // Check if the request body is empty
-    if (Object.keys(req.body).length === 0) {
-      return APIResponse.error("Book data is required", 400).send(res);
-    }
+    const { id: bookId } = req.params;
 
     // Validate authenticated user
     const userId = req.user?._id;
@@ -41,8 +38,8 @@ const createBorrowingHandler = async (
       ).send(res);
     }
 
-    // Extracting bookId and optional dates from request body
-    const { bookId, borrowDate, dueDate } = req.body;
+    // Extracting borrowDate and dueDate from request body
+    const { borrowDate, dueDate } = req.body;
 
     // Validating bookId is a valid ObjectId and exists in the database
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
@@ -73,7 +70,7 @@ const createBorrowingHandler = async (
 
     // Prepare the borrow data
     const borrowData = {
-      bookId,
+      bookId: new mongoose.Types.ObjectId(bookId), 
       userId: new mongoose.Types.ObjectId(userId),
       borrowDate: borrowDate || new Date(),
       dueDate: dueDate || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // Default 14 days
@@ -81,9 +78,19 @@ const createBorrowingHandler = async (
       lateFee: 0,
     };
 
-    // Decrease the book's available copies
-    bookExists.copiesAvailable -= 1;
-    await bookExists.save();
+    // Decrease the book's available copies atomically to prevent race conditions
+    const updatedBook = await BookCreationModel.findOneAndUpdate(
+      { _id: bookId, copiesAvailable: { $gt: 0 } },
+      { $inc: { copiesAvailable: -1 } },
+      { new: true }
+    );
+
+    if (!updatedBook) {
+      return APIResponse.error(
+        "The book is no longer available for borrowing.",
+        400
+      ).send(res);
+    }
 
     // Create the borrow record
     const newBorrow = await BorrowingRepo.createBorrowing(borrowData);

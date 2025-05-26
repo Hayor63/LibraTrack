@@ -1,18 +1,41 @@
 import { Request, Response } from "express";
-import { UpdateUserSchema } from "../../../validationSchema/user"; // Ensure correct import
-import APIResponse from "../../../utils/api";
 import userRepo from "../../../database/repository/userRepo";
+import APIResponse from "../../../utils/api";
+import { UpdateUserSchema } from "../../../validationSchema/user";
 
-const updateUserHandler = async (
-  req: Request<UpdateUserSchema["params"], {}, UpdateUserSchema["body"]>,
-  res: Response
-) => {
+interface AuthenticatedRequest extends Request {
+  user?: { _id: string; role: string }; // Add role here
+}
+
+const updateUserHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
+    const user = req.user;
 
-    // Ensure at least one valid field is provided
-    if (!Object.values(updatedData).some(value => value !== undefined)) {
+    if (!user || !user._id) {
+      return APIResponse.error("User not authenticated", 401).send(res);
+    }
+
+    const isAdmin = user.role === "admin";
+    const isOwner = user._id === id;
+
+    // Only admin or the user themself can update
+    if (!isAdmin && !isOwner) {
+      return APIResponse.error("Unauthorized to update this user", 403).send(res);
+    }
+
+    // If user is not admin, remove restricted fields
+    if (!isAdmin) {
+      delete updatedData.role;
+      delete updatedData.email; // Optional depending on your rules
+    }
+
+    if (!updatedData || Object.keys(updatedData).length === 0) {
+      return APIResponse.error("No update data provided", 400).send(res);
+    }
+
+    if (!Object.values(updatedData).some((value) => value !== undefined)) {
       return APIResponse.error("At least one field must be provided for update", 400).send(res);
     }
 

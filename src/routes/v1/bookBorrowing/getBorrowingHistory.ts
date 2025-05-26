@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import BookReservationRepo from "../../../database/repository/bookResevationRepo";
+import BorrowingRepo from "../../../database/repository/borrowRepo";
 import APIResponse from "../../../utils/api";
 
-// Define the AuthenticatedRequest interface extending Express's Request
 interface AuthenticatedRequest extends Request {
   user?: {
     _id: string;
@@ -10,39 +9,37 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response) => {
+const getAllBorrowingsHistoryHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Authentication check
     if (!req.user || !req.user._id) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Extract query params
+    // Parse query parameters
     const { pageNumber, pageSize, sortField, sortType, search, userId, ...restFilters } = req.query;
 
-    // Build filter object for reservations
+    // Build filter object
     let filter = {
-      ...restFilters, // Additional filters like status, date ranges, etc.
+      ...restFilters, 
     };
 
     // Access control logic:
     if (req.user.role === "admin") {
-      // Admins can filter by userId if provided
+      // Admins can filter by specific userId if provided in the query
       if (userId) {
         filter.userId = userId;
       }
-      // Admins can view all reservations if no userId filter is given
     } else {
-      // Regular users can only see their own reservations
+      // Regular users can ONLY see their own borrowings, regardless of query params
       filter.userId = req.user._id;
     }
 
     // Set pagination parameters
     const page = Math.max(1, Number(pageNumber) || 1);
     const limit = Math.max(1, Number(pageSize) || 10);
-    const skip = (page - 1) * limit;
 
-    // Build sort logic based on query parameters
+    // Build sort logic
     const sortLogic =
       sortField && sortType
         ? {
@@ -50,8 +47,8 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
           }
         : undefined;
 
-    // Fetch paginated reservations
-    const { data: reservations, totalItems } = await BookReservationRepo.getAllReservations({
+    // Get paginated borrowings
+    const { data: borrows, totalItems } = await BorrowingRepo.getAllBorrowingsHistory({
       pageNumber: page,
       pageSize: limit,
       filter,
@@ -59,16 +56,16 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
       sortLogic,
     });
 
-    // Handle the case where no reservations are found
-    if (!reservations || reservations.length === 0) {
-      return APIResponse.error("No reservations found", 404).send(res);
+    // Check if any borrowings found
+    if (!borrows || borrows.length === 0) {
+      return APIResponse.error("No Borrowing History found", 404).send(res);
     }
 
-    // Respond with successful data and pagination details
+    // Return successful response with pagination info
     return APIResponse.success(
       {
-        message: "Reservations retrieved successfully",
-        data: reservations,
+        message: "Borrowing History retrieved successfully",
+        data: borrows,
         pagination: {
           currentPage: page,
           pageSize: limit,
@@ -79,9 +76,8 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
       200
     ).send(res);
   } catch (error) {
-    // Handle unexpected errors
     return APIResponse.error((error as Error).message, 500).send(res);
   }
 };
 
-export default getAllReservationHandler;
+export default getAllBorrowingsHistoryHandler;

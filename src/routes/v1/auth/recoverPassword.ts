@@ -12,7 +12,6 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
 
     //fiind user
     const user = await userRepo.findByEmail(email);
-    console.log(user)
     if (!user) {
       return APIResponse.error("user not found", 404).send(res);
     }
@@ -26,7 +25,7 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
       token: resetToken,
       expiresAt: Date.now() + 3600000,
     });
-    console.log("storedTokens", stored);
+ 
 
     // Send email with reset link
     const resetLink = `${config.baseUrl}/reset-password/${user._id}/${resetToken}`;
@@ -47,7 +46,6 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
       res
     );
   } catch (error) {
-    console.error("Recover password error:", error);
     return APIResponse.error("Something went wrong, please try again").send(
       res
     );

@@ -2,17 +2,8 @@ import { boolean, date, number, object, string, TypeOf, z } from "zod";
 import { Types } from "mongoose";
 
 export const borrowSchema = z.object({
-  body: object({
-    bookId: string({ required_error: "Book ID is required" }),
-    borrowDate: date()
-      .optional()
-      .default(() => new Date()),
-    dueDate: date()
-      .optional()
-      .default(() => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)),
-    returnDate: date().optional(),
-    isReturned: boolean().optional().default(false),
-    lateFee: number().optional().default(0),
+  params: object({
+    id: string({ required_error: "Book ID is required" }),
   }),
 });
 
@@ -64,7 +55,7 @@ export const returnBookSchema = object({
 
 });
 
-export type BorrowSchemaType = TypeOf<typeof borrowSchema>["body"];
+export type BorrowSchemaType = TypeOf<typeof borrowSchema>["params"];
 export type getSingleBorrowSchemaType = TypeOf<
   typeof getSingleBorrowSchema
 >["params"];

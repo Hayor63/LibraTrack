@@ -11,10 +11,189 @@ import deleteBookHandler from "./delete";
 
 const bookCreationRoutes = Router();
 
+
+
+/**
+ * @swagger
+ * tags:
+ *   name: Books
+ *   description: Book management endpoints
+ */
+
+/**
+ * @swagger
+ * /api/v1/books:
+ *   post:
+ *     summary: Create a new book
+ *     tags: [Books]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - author
+ *               - categoryId
+ *               - genreId
+ *               - publicationYear
+ *               - totalCopies
+ *               - copiesAvailable
+ *             properties:
+ *               title:
+ *                 type: string
+ *               author:
+ *                 type: string
+ *               categoryId:
+ *                 type: string
+ *               genreId:
+ *                 type: string
+ *               publicationYear:
+ *                 type: integer
+ *               totalCopies:
+ *                 type: integer
+ *               copiesAvailable:
+ *                 type: integer
+ *               isReserved:
+ *                 type: boolean
+ *                 default: false
+ *     responses:
+ *       201:
+ *         description: Book created successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/v1/books:
+ *   get:
+ *     summary: Get all books
+ *     tags: [Books]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of books
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/v1/books/{id}:
+ *   get:
+ *     summary: Get a single book by ID
+ *     tags: [Books]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Book ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Book found
+ *       404:
+ *         description: Book not found
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/v1/books/{id}:
+ *   patch:
+ *     summary: Update a book by ID
+ *     tags: [Books]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Book ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - author
+ *               - categoryId
+ *               - genreId
+ *               - publicationYear
+ *               - totalCopies
+ *               - copiesAvailable
+ *             properties:
+ *               title:
+ *                 type: string
+ *               author:
+ *                 type: string
+ *               categoryId:
+ *                 type: string
+ *               genreId:
+ *                 type: string
+ *               publicationYear:
+ *                 type: integer
+ *               totalCopies:
+ *                 type: integer
+ *               copiesAvailable:
+ *                 type: integer
+ *               isReserved:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Book updated successfully
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Book not found
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/v1/books/{id}:
+ *   delete:
+ *     summary: Delete a book by ID
+ *     tags: [Books]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Book ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Book deleted successfully
+ *       404:
+ *         description: Book not found
+ *       401:
+ *         description: Unauthorized
+ */
+
+
 bookCreationRoutes.post(
   "/",
   authenticateUser,
-  // authorizedRoles("admin"),
+  authorizedRoles("admin"),
   validate(bookCreationSchema),
   createBookHandler
 );
@@ -47,7 +226,7 @@ bookCreationRoutes.post(
   bookCreationRoutes.delete(
     "/:id",
     authenticateUser,
-      // authorizedRoles("admin"),
+      authorizedRoles("admin"),
     validate(deleteSingleBookSchema),
     deleteBookHandler
   );

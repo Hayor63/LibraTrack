@@ -11,7 +11,7 @@ export default {
   refreshTokenPrivateKey: process.env.REFRESH_TOKEN,
   brevoMailkey: process.env.BREVO_MAIL_KEY || "",
   brevoPort: Number(process.env.BREVO_PORT) || 465, // Ensuring it's a number
-  host: process.env.HOST || "",
+  smtpHost: process.env.SMTP_HOST || "",
   userMailLogin: process.env.USER_MAIL_LOGIN || "",
   baseUrl: process.env.BASE_URL || "http://localhost:5173",
   emailVerificationPrivateKey: process.env.EMAIL_VERIFICATION_PRIVATE_KEY,

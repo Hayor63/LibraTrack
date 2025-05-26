@@ -1,7 +1,9 @@
-import { bookReservationSchemaType } from "../../validationSchema/bookReservation";
+import { DocumentType } from "@typegoose/typegoose";
 import BookReservationModel, {
   BookReservation,
 } from "../models/bookReservation";
+import { PartialLoose } from "../../utils/helper";
+import { formatResponseRecord } from "../../utils/formatter";
 
 type BookReservationInput = {
   bookId: string;
@@ -11,55 +13,166 @@ type BookReservationInput = {
   status: "pending" | "fulfilled" | "canceled";
 };
 
+class BookExtend extends BookReservation {
+  createdAt: string;
+}
+
+
+type SortLogic = PartialLoose<BookExtend, "asc" | "desc" | 1 | -1>;
+const defaultSortLogic: SortLogic = { createdAt: -1 };
+export interface PaginatedFetchParams {
+  pageNumber: number;
+  pageSize: number;
+  filter: Record<string, any>;
+  sortLogic: SortLogic;
+  search: string;
+}
+
+
 export default class BookReservationRepo {
   static createReservation: (
-    bookReservation: BookReservationInput
+    bookReservation: BookReservation
   ) => Promise<BookReservation> = async (reserve) => {
     return await BookReservationModel.create(reserve);
   };
 
   //find by Id
   static async getReservationById(id: string) {
-    return BookReservationModel.findById(id); 
+    return BookReservationModel.findById(id);
   }
 
   // Get all Reservations
-  static async getAllReservations(): Promise<BookReservation[]> {
-    return BookReservationModel.find();
+  static getAllReservations = async ({
+    pageNumber = 1,
+    pageSize = 10,
+    filter: _filter,
+    sortLogic = defaultSortLogic,
+    search,
+  }: Partial<PaginatedFetchParams>): Promise<{
+    data: BookReservation[];
+    totalItems: number;
+  }> => {
+    // Build filter
+    const filter = {
+      ...(_filter || {}),
+      ...(search ? { title: { $regex: search, $options: "i" } } : {}),
+    };
+  
+    const skip = (pageNumber - 1) * pageSize;
+  
+    const [books, totalItems] = await Promise.all([
+      BookReservationModel.find(filter)
+        .sort(sortLogic)
+        .populate({
+          path: "bookId",
+          select: "title author publicationYear categoryId genreId",
+          populate: [
+            { path: "categoryId", select: "name description" },
+            { path: "genreId", select: "name" },
+          ],
+        })
+        .populate("userId", "userName email")
+        .skip(skip)
+        .limit(pageSize)
+        .lean()
+        .exec(),
+  
+      BookReservationModel.countDocuments(filter),
+    ]);
+  
+    const formattedBooks: BookReservation[] = books.map((book) =>
+      formatResponseRecord(book)
+    );
+  
+    return { data: formattedBooks, totalItems };
+  };
+
+  // Count for total documents
+  static async getTotalReservationCount(): Promise<number> {
+    return BookReservationModel.countDocuments();
   }
 
-  // get Reservation by user
-  static async getReservationsByUser(userId: string): Promise<BookReservation[]> {
-    return BookReservationModel.find({ userId });
+  // Get reservations by user with pagination
+  static async getReservationsByUser({
+    userId,
+    skip = 0,
+    limit = 10,
+  }: {
+    userId: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<DocumentType<BookReservation>[]> {
+    return BookReservationModel.find({ userId })
+      .skip(skip)
+      .limit(limit)
+      .populate([
+        {
+          path: "bookId",
+          select: "title author publicationYear totalCopies copiesAvailable",
+          populate: [
+            { path: "categoryId", select: "name description" },
+            { path: "genreId", select: "name" },
+          ],
+        },
+      ]);
   }
-  
+
+    // Count user  reservation documents
+    static async getUserReservationCount(id:string): Promise<number> {
+      return BookReservationModel.countDocuments();
+    }
+
   //delete Reservation
   static deleteReservation = async (id: string) => {
     return await BookReservationModel.findByIdAndDelete(id);
   };
 
-  // Get book history
-  static async getBookHistory(userId: string) {
-    return await BookReservationModel.find({
-      userId,
-      status: { $ne: "pending" }, // Excludes "pending" status
-    });
+
+  // Get book history by user with pagination
+  static async getBookReservationHistory({
+    userId,
+    skip = 0,
+    limit = 10,
+  }: {
+    userId: string;
+    skip?: number;
+    limit?: number;
+  }): Promise<DocumentType<BookReservation>[]> {
+    return BookReservationModel.find({ userId ,  status: { $ne: "pending" },})
+      .skip(skip)
+      .limit(limit)
+      .populate([
+        {
+          path: "bookId",
+          select: "title author publicationYear totalCopies copiesAvailable",
+          populate: [
+            { path: "categoryId", select: "name description" },
+            { path: "genreId", select: "name" },
+          ],
+        },
+      ]);
   }
-  
+
+ // Count user  history documents
+    static async getUserHistoryCount(id:string): Promise<number> {
+      return BookReservationModel.countDocuments();
+    }
+
 
   // Update Reservation
   static async updateReservation(
     id: string,
-    updateParams: Partial<bookReservationSchemaType["body"]> // Only passing the "body" of the schema
-  ) {
+    updateParams: Partial<BookReservation> // use the class, not Zod type
+  ): Promise<DocumentType<BookReservation> | null> {
     const updatedReservation = await BookReservationModel.findByIdAndUpdate(
       id,
       updateParams,
       {
-        new: true, // Return the updated document
-        runValidators: true, // Ensure that Mongoose validation occurs on the updated fields
+        new: true,
+        runValidators: true,
       }
     );
+
     return updatedReservation;
   }
 

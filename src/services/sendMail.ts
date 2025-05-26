@@ -37,7 +37,7 @@ const sendEmail = async ({
 
   try {
     const transporter = nodemailer.createTransport({
-      host: config.get<string>("host"),
+      host: config.get<string>("smtpHost"),
       port: config.get<number>("brevoPort"), // Check if this is the correct SMTP port
       auth: {
         user: config.get<string>("userMailLogin"),

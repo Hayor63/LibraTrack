@@ -20,11 +20,7 @@ export const formatResponseRecord = (record: any, recordType?: string): any => {
         }
         // ✅ Preserve referenced fields (e.g., bookId, authorId, genreId, publisherId)
         else if (["bookId", "genreId", "categoryId"].includes(key)) {
-          acc[key] = {
-            id: value._id?.toString() || value.id,
-            name: value.name,
-            ...(value.description && { description: value.description }),
-          };
+          acc[key] = formatResponseRecord(value);
         } else {
           acc[key] = formatResponseRecord(value);
         }
@@ -33,7 +29,7 @@ export const formatResponseRecord = (record: any, recordType?: string): any => {
       else if (value instanceof mongoose.Types.ObjectId) {
         acc[key] = value.toString();
       }
-      //Keep normal fields (except _id, __v)
+      // Keep normal fields (except _id, __v)
       else if (!/^_/.test(key) || key === "_id") {
         acc[key] = value;
       }
@@ -43,11 +39,14 @@ export const formatResponseRecord = (record: any, recordType?: string): any => {
     {}
   );
 
-  // Ensure `_id` is converted to `id`
+  // Ensure consistent `id` field (using value from `_id`)
   formattedRecord.id =
     record._id instanceof mongoose.Types.ObjectId
       ? record._id.toString()
       : record._id || record.id;
+
+  // Clean up the `_id` field from the formatted response
+  delete formattedRecord._id;
 
   // Handle specific library record types with sorting logic
   switch (recordType) {

@@ -19,20 +19,20 @@ const port = config.port;
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "SnapNest API Documentation",
+    title: "LibraTrack API Documentation",
     version: "1.0.0",
     description:
-      "Comprehensive API documentation for the SnapNest application built with TypeScript",
+      "Comprehensive API documentation for the LibraTrack application built with TypeScript",
   },
   servers: [
     {
-      url: "http://localhost:9000",
+      url: "http://localhost:8000",
       description: "Development Server",
     },
   ],
   components: {
     securitySchemes: {
-      BearerAuth: {
+      bearerAuth: {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT", // Optional, indicates the token type
@@ -41,7 +41,7 @@ const swaggerDefinition = {
   },
   security: [
     {
-      BearerAuth: [],
+      bearerAuth: [],
     },
   ],
 };

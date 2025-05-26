@@ -14,12 +14,13 @@ const createReviewsAndRating = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { bookId, review, rating } = req.body;
+  const { bookId } = req.params;
+  const { review, rating } = req.body;
 
   try {
     // Get and validate user ID
     const userId = req.user?._id;
-    console.log("Authenticated user:", req.user);
+
     if (!userId) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
@@ -40,28 +41,22 @@ const createReviewsAndRating = async (
       return APIResponse.error("Book not found", 404).send(res);
     }
 
-    const existingReview = await RatingAndReviewsRepo.findByUserAndBook(
-      userId,
-      bookId
-    );
-
+    // Check if the user has already reviewed the book
+    const existingReview = await RatingAndReviewsRepo.findByUserAndBook(userId, bookId);
     if (existingReview) {
-      return APIResponse.error("You have already reviewed this book", 400).send(
-        res
-      );
+      return APIResponse.error("You have already reviewed this book", 400).send(res);
     }
 
     // Prepare review data
     const reviewsAndRatingData = {
-      bookId,
+      bookId: new mongoose.Types.ObjectId(bookId),
       review,
       rating,
-      userId: req.user?._id, // from the token (you get this from middleware)
+      userId: new mongoose.Types.ObjectId(userId),
     };
 
-    const reviewsAndRating = await RatingAndReviewsRepo.createReviewsAndRating(
-      reviewsAndRatingData
-    );
+    // Create review and rating
+    const reviewsAndRating = await RatingAndReviewsRepo.createReviewsAndRating(reviewsAndRatingData);
 
     return APIResponse.success(
       {

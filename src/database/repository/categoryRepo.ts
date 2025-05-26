@@ -12,9 +12,20 @@ export default class CategoryRepo {
     return CategoryModel.findById(categoryId);
   }
 
-  // Get all categories
-  static async getAllCategories(): Promise<CategoryType[]> {
-    return CategoryModel.find();
+  // Get all categories with pagination
+  static async getAllCategories({
+    skip = 0,
+    limit = 10,
+  }: {
+    skip?: number;
+    limit?: number;
+  }): Promise<Category[]> {
+    return CategoryModel.find().skip(skip).limit(limit);
+  }
+
+  // Count for total documents
+  static async getTotalCategoryCount(): Promise<number> {
+    return CategoryModel.countDocuments();
   }
 
   // Delete category

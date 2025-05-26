@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import APIResponse from "../../../utils/api";
 import RatingAndReviewsRepo from "../../../database/repository/ratingAndReviewsRepo";
 
+
 interface AuthenticatedRequest extends Request {
   user?: {
     _id: string;
@@ -14,27 +15,29 @@ const deleteReviewHandler = async (
   res: Response
 ) => {
   try {
-    const { id } = req.params;
+    const { id: reviewId } = req.params;
 
-    const review = await RatingAndReviewsRepo.findById(id);
+    // Ensure authenticated user exists
+    if (!req.user) {
+      return APIResponse.error("User not authenticated", 401).send(res);
+    }
+
+    // Get the review from the repository
+    const review = await RatingAndReviewsRepo.findById(reviewId);
     if (!review) {
       return APIResponse.error("Review not found", 404).send(res);
     }
 
-    // Check permission: only the owner or admin can delete
-    if (
-      review.userId.toString() !== req.user?._id &&
-      req.user?.role !== "admin"
-    ) {
-      return res
-        .status(403)
-        .json({ error: "You can only delete your own review or be an admin" });
+    // Check if the authenticated user is the owner of the comment
+    if (review.userId.toString() !== req.user._id &&  req.user?.role !== "admin") {
+      return APIResponse.error("You can only delete your own review or be an admin", 403).send(res);
     }
 
-    await RatingAndReviewsRepo.deleteReview(id);
+    // Delete the review
+    await RatingAndReviewsRepo.deleteReview(reviewId);
 
     return APIResponse.success(
-      { message: "Review deleted successfully", data: review },
+      { message: "review deleted ", data: review },
       200
     ).send(res);
   } catch (error) {

@@ -36,19 +36,14 @@ export const loginSchema = object({
   }),
 });
 
-// Update User Profile Schema
+// Update User Profile Schema (for PATCH)
 export const updateUserProfileSchema = z.object({
   params: object({
-    id: string({ required_error: "User ID is required" }), // Corrected the error message
+    id: string({ required_error: "User ID is required" }),
   }),
   body: object({
-    userName: string({
-      required_error: " Name is required",
-    }),
-
-    password: string({
-      required_error: " Password is required",
-    })
+    userName: string().optional(),
+    password: string()
       .min(8, "Password should not be less than 8")
       .regex(
         /(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
@@ -56,13 +51,12 @@ export const updateUserProfileSchema = z.object({
           message:
             "Password must contain uppercase letter, lowercase letter, a number and any of (!@#$%^&*).",
         }
-      ),
-    email: string({
-      required_error: "Email is required",
-    }).email("Not a valid Email"),
-    role: z.enum(["admin", "user"]).optional(),
+      )
+      .optional(),
+    email: string().email("Not a valid Email").optional(),
   }),
 });
+
 
 //recover password
 export const recoverPasswordSchema = object({

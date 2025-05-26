@@ -3,7 +3,7 @@ import { object, string, number, boolean, array, z, TypeOf } from "zod";
 export const CategorySchema = object({
   body: object({
     name: string({
-      required_error: "Title is required",
+      required_error: "Name is required",
     }),
     description: string({
       required_error: "Description is required",

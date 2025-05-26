@@ -26,13 +26,18 @@ export class ReviewsAndRating {
   @prop({ required: true })
   review!: string;
 
-  @prop({ 
-    required: true, 
-    default: 1, 
-    validate: (value: number) => value >= 1 && value <= 5 
+  @prop({ type: () => [String] })
+  likes!: string[];
+
+  @prop({  default: 0 })
+  likeCount!: number;
+
+  @prop({
+    required: true,
+    default: 1,
+    validate: (value: number) => value >= 1 && value <= 5,
   })
   rating!: number;
-  
 }
 
 const ReviewsAndRatingModel = getModelForClass(ReviewsAndRating);

@@ -10,7 +10,10 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-const deleteReservationHandler= async (req: AuthenticatedRequest, res: Response) => {
+const deleteReservationHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     const { id } = req.params;
 
@@ -23,13 +26,12 @@ const deleteReservationHandler= async (req: AuthenticatedRequest, res: Response)
     await BookReservationRepo.deleteReservation(id);
 
     return APIResponse.success(
-        { message: "Reservation deleted successfully" },  // No need to return the deleted reservation object
-        200
-      ).send(res);
+      { message: "Reservation deleted successfully" }, // No need to return the deleted reservation object
+      200
+    ).send(res);
   } catch (error) {
     return APIResponse.error((error as Error).message, 500).send(res);
   }
 };
 
-
-export default deleteReservationHandler
+export default deleteReservationHandler;

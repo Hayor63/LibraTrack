@@ -7,20 +7,36 @@ const getUserReservationHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
+    const page = Math.max(1, Number(req.query.pageNumber) || 1);
+    const limit = Math.max(1, Number(req.query.pageSize) || 10);
+    const skip = (page - 1) * limit;
+
     const user = await userRepo.findById(id);
     if (!user) {
       return APIResponse.error("User not found", 404).send(res);
     }
-    const reservations = await BookReservationRepo.getReservationsByUser(
-      id
-    );
-    if (!reservations || reservations.length === 0) {
-        return APIResponse.error("No reservations found", 404).send(res); // Fixed message
-      }
 
-    // Return success response
+    // Fetch paginated user-specific reservations and count
+    const [reservations, totalItems] = await Promise.all([
+      BookReservationRepo.getReservationsByUser({ userId: id, skip, limit }),
+      BookReservationRepo.getUserReservationCount(id),
+    ]);
+
+    if (!reservations || reservations.length === 0) {
+      return APIResponse.error("No reservations found", 404).send(res);
+    }
+
     return APIResponse.success(
-      { message: "Reservations retrieved successfully", data: reservations },
+      {
+        message: "Reservations retrieved successfully",
+        data: reservations,
+        pagination: {
+          currentPage: page,
+          pageSize: limit,
+          totalItems,
+          totalPages: Math.ceil(totalItems / limit),
+        },
+      },
       200
     ).send(res);
   } catch (error) {
@@ -28,5 +44,4 @@ const getUserReservationHandler = async (req: Request, res: Response) => {
   }
 };
 
-
-export default getUserReservationHandler
+export default getUserReservationHandler;

@@ -23,7 +23,6 @@ const resetPasswordHandler = async (req: Request, res: Response) => {
 
     // check if the token exists and it's valid
     const getToken = await TokenModel.findOne({ userId, token });
-    console.log("toks", getToken);
     if (!getToken) {
       return APIResponse.error("Invalid or expired token", 400).send(res);
     }

@@ -3,7 +3,7 @@ import APIResponse from "../../../utils/api";
 import userRepo from "../../../database/repository/userRepo";
 import BookCreationRepo from "../../../database/repository/bookCreationRepo";
 import BookReservationRepo from "../../../database/repository/bookResevationRepo";
-import { bookReservationSchemaType } from "../../../validationSchema/bookReservation";
+import mongoose from "mongoose";
 
 interface AuthenticatedRequest extends Request {
   user?: { _id: string };
@@ -13,7 +13,7 @@ const createReservationHandler = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { bookId } = req.params; 
+  const { bookId } = req.params;
   const { status } = req.body;
   const userId = req.user?._id;
 
@@ -26,7 +26,9 @@ const createReservationHandler = async (
     // Validate user existence
     const user = await userRepo.findById(userId);
     if (!user) {
-      return APIResponse.error("Invalid userId: User does not exist", 400).send(res);
+      return APIResponse.error("Invalid userId: User does not exist", 400).send(
+        res
+      );
     }
 
     // Find the book
@@ -41,25 +43,29 @@ const createReservationHandler = async (
     }
 
     // Check if the user already has an active reservation for the book
-    const existingReservation = await BookReservationRepo.getReservationByUserAndBook(userId, bookId);
+    const existingReservation =
+      await BookReservationRepo.getReservationByUserAndBook(userId, bookId);
 
     // If the user already has a pending reservation, prevent creating a new one
     if (existingReservation && existingReservation.status === "pending") {
-      return APIResponse.error("You already have an active reservation for this book", 400).send(res);
+      return APIResponse.error(
+        "You already have an active reservation for this book",
+        400
+      ).send(res);
     }
 
     // Proceed to create reservation if the book is available and no active reservation exists
     const reservationData = {
-      bookId,
-      userId,
+      bookId: new mongoose.Types.ObjectId(bookId),
+      userId: new mongoose.Types.ObjectId(userId),
       reservationDate: new Date(),
       expirationDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // Set expiration to 3 days
       status: status || "pending", // Default status to 'pending'
     };
-    
-    const reservation = await BookReservationRepo.createReservation(reservationData);
 
-    console.log("reserve", reservationData);
+    const reservation = await BookReservationRepo.createReservation(
+      reservationData
+    );
 
     // Update book status to reserved
     await BookCreationRepo.updateById(bookId, { isReserved: true });

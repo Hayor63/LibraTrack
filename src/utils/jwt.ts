@@ -10,7 +10,7 @@ export function signjwt(
     config.get<string>(keyName),
     "base64"
   ).toString("ascii");
-  console.log(signingkey, object);
+
 
   return jwt.sign(object, signingkey, {
     ...(options && options),

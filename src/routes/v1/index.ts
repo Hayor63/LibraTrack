@@ -7,15 +7,17 @@ import genreRoutes from "./genre";
 import bookReservationRoutes from "./bookReservation";
 import reviewRatingRoutes from "./reviewRating";
 import borrowingRoutes from "./bookBorrowing";
+import searchRoutes from "./search";
 
 const router = Router()
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
 router.use("/books", bookCreationRoutes)
 router.use("/category", categoryRoutes);
-router.use("/genre", genreRoutes);
+router.use("/genres", genreRoutes);
 router.use("/bookReservation", bookReservationRoutes);
 router.use("/reviews", reviewRatingRoutes);
-router.use("/borrowing", borrowingRoutes);
+router.use("/borrowings", borrowingRoutes);
+router.use("/search", searchRoutes)
 
 export default router

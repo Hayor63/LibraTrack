@@ -1,11 +1,12 @@
 import { object, string, number, TypeOf } from "zod";
 
 export const createReviewSchema = object({
-  body: object({
+  params: object({
     bookId: string({
       required_error: "Book ID is required",
     }),
-
+  }),
+  body: object({
     review: string({
       required_error: "Review is required",
     }).min(1, "Review cannot be empty"),
@@ -57,10 +58,31 @@ export const getSingleReviewSchema = object({
   }),
 });
 
-export type createReviewSchemaType = TypeOf<typeof createReviewSchema>["body"];
+//like a comment
+export const likeCommentSchema = object({
+  params: object({
+    id: string().nonempty("Comment ID is required"),
+  }),
+});
+
+//dislike a Comment
+export const dislikeCommentSchema = object({
+  params: object({
+    id: string().nonempty("Comment ID is required"),
+  }),
+});
+
+export type createReviewSchemaType = {
+  body: TypeOf<typeof createReviewSchema>["body"];
+  params: TypeOf<typeof createReviewSchema>["params"];
+};
 export type updateReviewsAndRatingSchemaType = {
   params: TypeOf<typeof updateReviewsAndRatingSchema>["params"];
   body: TypeOf<typeof updateReviewsAndRatingSchema>["body"];
 };
-export type deleteSingleReview = TypeOf<typeof deleteSingleReviewSchema>["params"]
-export type getSingleReview = TypeOf<typeof getSingleReviewSchema>["params"]
+export type deleteSingleReview = TypeOf<
+  typeof deleteSingleReviewSchema
+>["params"];
+export type getSingleReview = TypeOf<typeof getSingleReviewSchema>["params"];
+export type likeComment = TypeOf<typeof likeCommentSchema>["params"];
+export type dislikeComment = TypeOf<typeof dislikeCommentSchema>["params"];
