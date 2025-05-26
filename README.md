@@ -52,18 +52,19 @@ This project includes interactive API documentation using Swagger.
    - Create a `.env` file in the root of the project.
    - Add the necessary configuration for your database connection and JWT secrets.
 
- ```bash
-    PORT=5000
-    MONGO_URI=your_mongodb_connection_string
-    JWT_SECRET=your_jwt_secret
-  ```
+     ```bash
+        PORT=5000
+        MONGO_URI=your_mongodb_connection_string
+        JWT_SECRET=your_jwt_secret
+      ```
 
 
 
 4. Run the application:
-    ```bash
+   
+   ```bash
     npm run dev
-    ```
+   ```
 
 ### API Overview (Key Endpoints)
 
@@ -104,6 +105,3 @@ This project includes interactive API documentation using Swagger.
 
 Feel free to fork the repository, create issues, and submit pull requests. Contributions are welcome!
 
-## License
-
-This project is licensed under the MIT License.
