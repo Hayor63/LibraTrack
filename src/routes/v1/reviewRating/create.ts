@@ -18,7 +18,7 @@ const createReviewsAndRating = async (
   const { review, rating } = req.body;
 
   try {
-    // Get and validate user ID
+    // Getting and validating user ID
     const userId = req.user?._id;
 
     if (!userId) {
@@ -30,24 +30,24 @@ const createReviewsAndRating = async (
       return APIResponse.error("User does not exist", 400).send(res);
     }
 
-    // Validate bookId format
+    // Validating bookId format
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return APIResponse.error("Invalid book ID format", 400).send(res);
     }
 
-    // Check book existence
+    // Checking book existence
     const bookExists = await BookCreationModel.findById(bookId);
     if (!bookExists) {
       return APIResponse.error("Book not found", 404).send(res);
     }
 
-    // Check if the user has already reviewed the book
+    // Checking if the user has already reviewed the book
     const existingReview = await RatingAndReviewsRepo.findByUserAndBook(userId, bookId);
     if (existingReview) {
       return APIResponse.error("You have already reviewed this book", 400).send(res);
     }
 
-    // Prepare review data
+    // Preparing review data
     const reviewsAndRatingData = {
       bookId: new mongoose.Types.ObjectId(bookId),
       review,
@@ -55,7 +55,7 @@ const createReviewsAndRating = async (
       userId: new mongoose.Types.ObjectId(userId),
     };
 
-    // Create review and rating
+    // Creating review and rating
     const reviewsAndRating = await RatingAndReviewsRepo.createReviewsAndRating(reviewsAndRatingData);
 
     return APIResponse.success(

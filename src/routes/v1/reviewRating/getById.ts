@@ -7,7 +7,7 @@ const ReviewsByIdHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    // ✅ Validate if the ID is a valid MongoDB ObjectId
+    // Validating if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Review and Rating ID", 400).send(res);
     }

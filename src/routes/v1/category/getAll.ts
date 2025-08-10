@@ -8,7 +8,7 @@ const getAllCategoriesHandler = async (req: Request, res: Response) => {
     const limit = Math.max(1, Number(req.query.pageSize) || 10);
     const skip = (page - 1) * limit;
 
-    // Fetch paginated data and total count
+    // Fetching paginated data and total count
     const [categories, totalItems] = await Promise.all([
       CategoryRepo.getAllCategories({ skip, limit }),
       CategoryRepo.getTotalCategoryCount(),

@@ -7,19 +7,19 @@ const loginHandler = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    // Check if user exists
+    // Checking if user exists
     const existingUser = await userRepo.findByEmail(email);
     if (!existingUser) {
       return APIResponse.error("User with this email does not exist", 404).send(res);
     }
 
-    // Verify password
+    // Verifying password
     const isUserPassword = await existingUser.verifyPassword(password);
     if (!isUserPassword) {
       return APIResponse.error("Invalid email or password!!", 400).send(res);
     }
 
-    // Generate JWT token
+    // Generating JWT token
     const { password: _, ...userData } = existingUser.toObject();
     const accessToken = JWTRepo.signAccessToken(userData);
 

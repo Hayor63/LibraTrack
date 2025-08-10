@@ -8,26 +8,26 @@ const returnBookHandler = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Validate Borrowing ID
+    // Validating Borrowing ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Borrowing ID", 400).send(res);
     }
 
-    // Fetch borrowing record
+    // Fetching borrowing record
     const existingBorrowing = await BorrowingRepo.getBorrowingById(id);
     if (!existingBorrowing) {
       return APIResponse.error("Borrowing record not found", 404).send(res);
     }
 
-    // Check if already returned
+    // Checking if already returned
     if (existingBorrowing.isReturned) {
       return APIResponse.error("Book has already been returned", 400).send(res);
     }
 
-    // Set return date
+    // Setting return date
     const returnDate = new Date();
 
-    // Calculate late fee
+    // Calculating late fee
     const oneDay = 24 * 60 * 60 * 1000;
     const dueDate = new Date(existingBorrowing.dueDate);
     const daysLate = Math.max(
@@ -36,7 +36,7 @@ const returnBookHandler = async (req: Request, res: Response) => {
     );
     const lateFee = daysLate * 1; // 1 unit per late day
 
-    // Update borrowing record with return info
+    // Updating borrowing record with return info
     const updatedBorrowing = await BorrowingRepo.updateBorrowing(id, {
       isReturned: true,
       returnDate,
@@ -49,7 +49,7 @@ const returnBookHandler = async (req: Request, res: Response) => {
       );
     }
 
-    // Increase book copiesAvailable
+    // Increasing book copiesAvailable
     const book = await BookCreationModel.findById(existingBorrowing.bookId);
     if (!book) {
       return APIResponse.error("Book not found", 404).send(res);

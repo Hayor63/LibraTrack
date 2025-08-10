@@ -16,10 +16,10 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
       return APIResponse.error("user not found", 404).send(res);
     }
 
-    //Generate reset token
+    //Generating reset token
     const resetToken = JWTRepo.signResetToken(user._id.toString());
 
-    //store token in the database
+    //storing token in the database
     const stored = await TokenModel.create({
       userId: user._id,
       token: resetToken,
@@ -27,7 +27,7 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
     });
  
 
-    // Send email with reset link
+    // Sending email with reset link
     const resetLink = `${config.baseUrl}/reset-password/${user._id}/${resetToken}`;
     const emailSent = await sendEmail({
       userName: user.userName,
@@ -37,7 +37,7 @@ const recoverPasswordhandler = async (req: Request, res: Response) => {
       text: `Click the link to reset your password: ${resetLink}`,
     });
 
-    // Ensure email was sent
+    // Ensuring email was sent
     if (!emailSent?.success) {
       return APIResponse.error("Failed to send reset email").send(res);
     }

@@ -5,12 +5,12 @@ import APIResponse from "../../../utils/api";
 const deleteUserHandler = async (req: Request, res: Response) => {
   const { id: userId } = req.params;
   try {
-     // Find user before attempting to delete
+     // Finding user before attempting to delete
     const user = await userRepo.findById(userId);
     if (!user) {
       return APIResponse.error("User not found", 404).send(res);
     }
-    //perform deletion
+    //performing deletion
     await userRepo.deleteUser(userId);
     return APIResponse.success(
       { message: "User deleted successfully" },

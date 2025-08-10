@@ -7,7 +7,7 @@ const getSingleCategoryHandler = async (req: Request, res: Response) => {
   try {
     const getSingleCategory = await CategoryRepo.findById(id);
 
-    // Check if the category exists
+    // Checking if the category exists
     if (!getSingleCategory) {
       return APIResponse.error("Category not found", 404).send(res);
     }

@@ -16,17 +16,17 @@ const updateBookHandler = async (
     const { id } = req.params;
     const updatedData: Partial<updateBookSchemaType["body"]> = req.body;
 
-    // Validate if ID is a valid MongoDB ObjectId
+    // Validating if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Book ID", 400).send(res);
     }
 
-    // Ensure update data is not empty
+    // Ensuring update data is not empty
     if (!updatedData || Object.keys(updatedData).length === 0) {
       return APIResponse.error("No update data provided", 400).send(res);
     }
 
-    // Check if the book exists before updating
+    // Checking if the book exists before updating
     const existingBook = await BookCreationRepo.getBookById(id);
     if (!existingBook) {
       return APIResponse.error("Book not found", 404).send(res);

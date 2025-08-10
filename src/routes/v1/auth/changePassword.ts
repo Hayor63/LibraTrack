@@ -19,13 +19,13 @@ const changePasswordHandler = async (req: Request, res: Response) => {
       return APIResponse.error("User not found", 404).send(res);
     }
 
-    //verify old password
+    //verifing old password
     const isPasswordValid = await user.verifyPassword(oldPassword);
     if (!isPasswordValid) {
       return APIResponse.error("Incorrect old password", 400).send(res);
     }
 
-    //hash new password and update user
+    //hashing new password and update user
     const hashedPassowrd = await argon2.hash(newPassword);
     await UserModel.updateOne({ _id: user._id }, { password: hashedPassowrd });
 

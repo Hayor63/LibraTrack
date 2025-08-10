@@ -16,15 +16,15 @@ const getAllBorrowingsHistoryHandler = async (req: AuthenticatedRequest, res: Re
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Parse query parameters
+    // Parsing query parameters
     const { pageNumber, pageSize, sortField, sortType, search, userId, ...restFilters } = req.query;
 
-    // Build filter object
+    // Building filter object
     let filter = {
       ...restFilters, 
     };
 
-    // Access control logic:
+    // Accessing control logic:
     if (req.user.role === "admin") {
       // Admins can filter by specific userId if provided in the query
       if (userId) {
@@ -35,11 +35,11 @@ const getAllBorrowingsHistoryHandler = async (req: AuthenticatedRequest, res: Re
       filter.userId = req.user._id;
     }
 
-    // Set pagination parameters
+    // Setting pagination parameters
     const page = Math.max(1, Number(pageNumber) || 1);
     const limit = Math.max(1, Number(pageSize) || 10);
 
-    // Build sort logic
+    // Buildiing sort logic
     const sortLogic =
       sortField && sortType
         ? {
@@ -47,7 +47,7 @@ const getAllBorrowingsHistoryHandler = async (req: AuthenticatedRequest, res: Re
           }
         : undefined;
 
-    // Get paginated borrowings
+    // Getting paginated borrowings
     const { data: borrows, totalItems } = await BorrowingRepo.getAllBorrowingsHistory({
       pageNumber: page,
       pageSize: limit,
@@ -56,7 +56,7 @@ const getAllBorrowingsHistoryHandler = async (req: AuthenticatedRequest, res: Re
       sortLogic,
     });
 
-    // Check if any borrowings found
+    // Checking if any borrowings found
     if (!borrows || borrows.length === 0) {
       return APIResponse.error("No Borrowing History found", 404).send(res);
     }

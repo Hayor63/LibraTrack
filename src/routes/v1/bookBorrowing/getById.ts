@@ -6,12 +6,12 @@ import BorrowingRepo from "../../../database/repository/borrowRepo";
 const getBorrowByIdHandler = async (req: Request, res: Response) => {
   const { id: borrowId } = req.params;
   try {
-    // Validate MongoDB ObjectId
+    // Validating MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(borrowId)) {
       return APIResponse.error("Invalid borrow ID", 400).send(res);
     }
 
-    // fetch book from database
+    // fetching book from database
     const borrow = await BorrowingRepo.getBorrowingById(borrowId);
     if (!borrow) {
       return APIResponse.error("Borrow record not found", 404).send(res);

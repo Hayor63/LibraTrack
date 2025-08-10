@@ -16,7 +16,7 @@ const deleteCategoryHandler = async (
   try {
     const { id: categoryId } = req.params;
 
-    // Ensure user is authenticated and has admin role
+    // Ensuring user is authenticated and has admin role
     if (!req.user || req.user.role !== "admin") {
       return APIResponse.error(
         "Forbidden: You do not have permission to delete categories",
@@ -24,13 +24,13 @@ const deleteCategoryHandler = async (
       ).send(res);
     }
 
-    // Find category before deletion
+    // Finding category before deletion
     const category = await CategoryRepo.findById(categoryId);
     if (!category) {
       return APIResponse.error("Category not found", 404).send(res);
     }
 
-    // Delete category
+    // Deleting category
     await CategoryRepo.deleteCategory(categoryId);
 
     return APIResponse.success(

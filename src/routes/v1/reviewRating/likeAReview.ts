@@ -33,7 +33,7 @@ const likeAReviewHandler = async (req: AuthenticatedRequest, res: Response) => {
       return APIResponse.error("You already liked this review", 400).send(res);
     }
 
-    //update the review by adding the userId to the likes and incrementing the likes count
+    //updating the review by adding the userId to the likes and incrementing the likes count
     const updatedReview = await ReviewsAndRatingModel.findByIdAndUpdate(
       reviewId,
       { $addToSet: { likes: userId }, 

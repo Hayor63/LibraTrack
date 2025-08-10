@@ -7,14 +7,14 @@ const getSingleGenreHandler = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    // Validate if the ID is a valid MongoDB ObjectId
+    // Validating if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Genre ID", 400).send(res);
     }
 
     const genre = await GenreRepo.findById(id);
 
-    // Check if the Genre exists
+    // Checking if the Genre exists
     if (!genre) {
       return APIResponse.error("Genre not found", 404).send(res);
     }

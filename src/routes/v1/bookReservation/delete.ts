@@ -17,16 +17,16 @@ const deleteReservationHandler = async (
   try {
     const { id } = req.params;
 
-    //find Reservation before deletion
+    //finding Reservation before deletion
     const reservation = await BookReservationRepo.getReservationById(id);
     if (!reservation) {
       return APIResponse.error("Reservation not found", 404).send(res);
     }
-    //Delete Book
+    //Deleting Book
     await BookReservationRepo.deleteReservation(id);
 
     return APIResponse.success(
-      { message: "Reservation deleted successfully" }, // No need to return the deleted reservation object
+      { message: "Reservation deleted successfully" }, 
       200
     ).send(res);
   } catch (error) {

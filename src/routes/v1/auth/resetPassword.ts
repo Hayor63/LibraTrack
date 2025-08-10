@@ -21,7 +21,7 @@ const resetPasswordHandler = async (req: Request, res: Response) => {
       return APIResponse.error("User not found", 404).send(res);
     }
 
-    // check if the token exists and it's valid
+    // checking if the token exists and it's valid
     const getToken = await TokenModel.findOne({ userId, token });
     if (!getToken) {
       return APIResponse.error("Invalid or expired token", 400).send(res);
@@ -29,7 +29,7 @@ const resetPasswordHandler = async (req: Request, res: Response) => {
 
     const hashedPassword = await argon2.hash(password);
 
-    //update user's password
+    //updating user's password
     await UserModel.updateOne({ _id: user._id }, { password: hashedPassword });
     return APIResponse.success("Password updated successfully").send(res);
   } catch (error) {

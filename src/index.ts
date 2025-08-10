@@ -35,7 +35,7 @@ const swaggerDefinition = {
       bearerAuth: {
         type: "http",
         scheme: "bearer",
-        bearerFormat: "JWT", // Optional, indicates the token type
+        bearerFormat: "JWT",
       },
     },
   },
@@ -49,14 +49,13 @@ const swaggerDefinition = {
 const options = {
   swaggerDefinition,
   apis: [
-    "./src/routes/*.ts", // Matches: /routes/users.ts
+    "./src/routes/*.ts", 
     "./src/routes/**/*.ts",
     "./src/routes/v1/**/*.ts",
   ],
 };
 const swaggerSpec = swaggerJSDoc(options);
 
-//  CORS configuration to allow cross-origin requests
 
 var corOptions = {
   origin: "*",

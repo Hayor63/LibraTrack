@@ -13,16 +13,16 @@ const getAllReviewsHandler = async (req: Request, res: Response) => {
       ...restFilters
     } = req.query;
 
-    // Build filter object
+    // Building filter object
     let filter = {
-      ...restFilters, // Other filters like status, date ranges, etc.
+      ...restFilters, 
     };
 
-    // Set pagination parameters
+    // Setting pagination parameters
     const page = Math.max(1, Number(pageNumber) || 1);
     const limit = Math.max(1, Number(pageSize) || 10);
 
-    // Build sort logic
+    // Building sort logic
     const sortLogic =
       sortField && sortType
         ? {
@@ -30,7 +30,7 @@ const getAllReviewsHandler = async (req: Request, res: Response) => {
           }
         : undefined;
 
-    // Get paginated reviews
+    // Getting paginated reviews
     const { data: reviews, totalItems } =
       await RatingAndReviewsRepo.getAllReviews({
         pageNumber: page,
@@ -38,7 +38,7 @@ const getAllReviewsHandler = async (req: Request, res: Response) => {
         filter,
         sortLogic,
       });
-    // Handle the case where no reviews are found
+    // Handling the case where no reviews are found
     if (reviews.length === 0) {
       return APIResponse.error("No reviews or ratings found", 404).send(res);
     }

@@ -12,13 +12,13 @@ interface AuthenticatedRequest extends Request {
 const deleteGenreHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id: genreId } = req.params;
-    // Check if the genre exists before deleting
+    // Checking if the genre exists before deleting
     const genre = await GenreRepo.findById(genreId);
     if (!genre) {
       return APIResponse.error("Genre not found", 404).send(res);
     }
 
-    // Delete the genre
+    // Deleting the genre
     await GenreRepo.deleteGenre(genreId); 
 
     return APIResponse.success(

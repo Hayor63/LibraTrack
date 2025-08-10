@@ -19,7 +19,7 @@ const deleteBorrowingHandler = async (req: AuthenticatedRequest, res: Response) 
       return APIResponse.error("Borrowing not found", 404).send(res);
     }
 
-    // Delete borrowing
+    // Deleting borrowing
     await BorrowingRepo.deleteBorrowing(id);
 
     return APIResponse.success(

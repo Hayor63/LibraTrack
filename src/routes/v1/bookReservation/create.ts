@@ -18,12 +18,12 @@ const createReservationHandler = async (
   const userId = req.user?._id;
 
   try {
-    // Validate authenticated user
+    // Validating authenticated user
     if (!userId) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Validate user existence
+    // Validating user existence
     const user = await userRepo.findById(userId);
     if (!user) {
       return APIResponse.error("Invalid userId: User does not exist", 400).send(
@@ -31,18 +31,18 @@ const createReservationHandler = async (
       );
     }
 
-    // Find the book
+    // Finding the book
     const book = await BookCreationRepo.getBookById(bookId);
     if (!book) {
       return APIResponse.error("Book not found", 400).send(res);
     }
 
-    // Check if the book is available
+    // Checking if the book is available
     if (book.copiesAvailable <= 0) {
       return APIResponse.error("Book not available", 400).send(res);
     }
 
-    // Check if the user already has an active reservation for the book
+    // Checking if the user already has an active reservation for the book
     const existingReservation =
       await BookReservationRepo.getReservationByUserAndBook(userId, bookId);
 
@@ -54,7 +54,7 @@ const createReservationHandler = async (
       ).send(res);
     }
 
-    // Proceed to create reservation if the book is available and no active reservation exists
+    // Proceeding to create reservation if the book is available and no active reservation exists
     const reservationData = {
       bookId: new mongoose.Types.ObjectId(bookId),
       userId: new mongoose.Types.ObjectId(userId),
@@ -67,7 +67,7 @@ const createReservationHandler = async (
       reservationData
     );
 
-    // Update book status to reserved
+    // Updating book status to reserved
     await BookCreationRepo.updateById(bookId, { isReserved: true });
 
     return APIResponse.success(
@@ -75,7 +75,6 @@ const createReservationHandler = async (
       201
     ).send(res);
   } catch (error) {
-    console.error("Error creating reservation:", error);
     return APIResponse.error((error as Error).message, 500).send(res);
   }
 };

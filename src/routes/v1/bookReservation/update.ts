@@ -16,28 +16,28 @@ const updateBookReservationHandler = async (
   const updatedData: Partial<updateBookReservationSchemaType["body"]> = req.body;
 
   try {
-    // Validate if ID is a valid MongoDB ObjectId
+    // Validating if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Reservation ID", 400).send(res);
     }
 
-    // Ensure update data is not empty
+    // Ensuring update data is not empty
     if (!updatedData || Object.keys(updatedData).length === 0) {
       return APIResponse.error("No update data provided", 400).send(res);
     }
 
-    // Check if the status is "fulfilled" or "canceled", and update expirationDate accordingly
+    // Checking if the status is "fulfilled" or "canceled", and update expirationDate accordingly
     if (updatedData.status === "fulfilled" || updatedData.status === "canceled") {
       updatedData.expirationDate = new Date(); 
     }
 
-    // Check if the reservation exists before updating
+    // Checking if the reservation exists before updating
     const existingReservation = await BookReservationRepo.getReservationById(id);
     if (!existingReservation) {
       return APIResponse.error("Reservation not found", 404).send(res);
     }
 
-    // Perform the update
+    // Performing the update
     const updatedReservation = await BookReservationRepo.updateReservation(id, updatedData);
     if (!updatedReservation) {
       return APIResponse.error("Failed to update Reservation", 500).send(res);

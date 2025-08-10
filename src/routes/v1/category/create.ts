@@ -5,20 +5,20 @@ import CategoryModel from "../../../database/models/category";
 
 const createCategoryHandler = async (req: Request, res: Response) => {
     try {
-         // Extract name from request body
+         // Extracting name from request body
         const { name } = req.body;
 
         if (!name) {
             return APIResponse.error("Category name is required", 400).send(res);
         }
 
-        // Check if category already exists
+        // Checking if category already exists
         const existingCategory = await CategoryModel.findOne({ name });
         if (existingCategory) {
             return APIResponse.error("Category already exists", 400).send(res);
         }
 
-        // Create the category
+        // Creating the category
         const newCategory = await CategoryRepo.createCategory(req.body);
         return APIResponse.success(
             { message: "Category created successfully", data: newCategory },

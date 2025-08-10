@@ -14,18 +14,18 @@ const deleteBookHandler = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id: bookId } = req.params;
 
-    // Validate ObjectId
+    // Validating ObjectId
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return APIResponse.error("Invalid Book ID", 400).send(res);
     }
 
-    // Find book before deletion
+    // Finding book before deletion
     const book = await BookCreationRepo.getBookById(bookId);
     if (!book) {
       return APIResponse.error("Book not found", 404).send(res);
     }
 
-    // Delete book
+    // Deleting book
     await BookCreationRepo.deleteBook(bookId);
 
     return APIResponse.success(

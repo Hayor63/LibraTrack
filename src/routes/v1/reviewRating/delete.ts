@@ -17,23 +17,23 @@ const deleteReviewHandler = async (
   try {
     const { id: reviewId } = req.params;
 
-    // Ensure authenticated user exists
+    // Ensuring authenticated user exists
     if (!req.user) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Get the review from the repository
+    // Getting the review from the repository
     const review = await RatingAndReviewsRepo.findById(reviewId);
     if (!review) {
       return APIResponse.error("Review not found", 404).send(res);
     }
 
-    // Check if the authenticated user is the owner of the comment
+    // Checking if the authenticated user is the owner of the comment
     if (review.userId.toString() !== req.user._id &&  req.user?.role !== "admin") {
       return APIResponse.error("You can only delete your own review or be an admin", 403).send(res);
     }
 
-    // Delete the review
+    // Deleting the review
     await RatingAndReviewsRepo.deleteReview(reviewId);
 
     return APIResponse.success(

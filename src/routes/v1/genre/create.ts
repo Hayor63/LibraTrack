@@ -9,18 +9,18 @@ const createGenreHandler = async (req: Request, res: Response) => {
   try {
     const { categoryId, name } = req.body;
 
-    // Check if categoryId is a valid ObjectId
+    // Checking if categoryId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(categoryId)) {
       return APIResponse.error("Invalid Category ID", 400).send(res);
     }
 
-    // Check if the categoryId exists in the database
+    // Checking if the categoryId exists in the database
     const categoryExists = await CategoryModel.findById(categoryId);
     if (!categoryExists) {
         return APIResponse.error("The provided category does not exist", 404).send(res);
     }
 
-    // Check if Genre already exists (case-insensitive)
+    // Checking if Genre already exists (case-insensitive)
     const existingGenre = await GenreModel.findOne({
       name: new RegExp(`^${name}$`, "i"),
     });
@@ -28,7 +28,7 @@ const createGenreHandler = async (req: Request, res: Response) => {
       return APIResponse.error("Genre already exists", 400).send(res);
     }
 
-    //Create the Genre
+    //Creating the Genre
     const newGenre = await GenreRepo.createGenre({ categoryId, name });
 
     return APIResponse.success(

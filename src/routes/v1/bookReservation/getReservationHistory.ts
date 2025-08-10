@@ -53,7 +53,7 @@ const getAllReservationsHistoryHandler = async (req: AuthenticatedRequest, res: 
         ? { [sortField as string]: sortType }
         : undefined;
 
-    // Fetch reservations history
+    // Fetching reservations history
     const history = await BookReservationRepo.getBookReservationHistory({ userId: req.user._id, skip, limit });
     const totalItems = await BookReservationRepo.getUserHistoryCount(req.user._id);
 

@@ -16,13 +16,13 @@ const createBorrowingHandler = async (
   try {
     const { id: bookId } = req.params;
 
-    // Validate authenticated user
+    // Validating authenticated user
     const userId = req.user?._id;
     if (!userId) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Validate user existence
+    // Validating user existence
     const user = await userRepo.findById(userId);
     if (!user) {
       return APIResponse.error("Invalid userId: User does not exist", 400).send(res);

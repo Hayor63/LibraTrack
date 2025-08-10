@@ -8,7 +8,7 @@ const getAllGenresHandler = async (req: Request, res: Response) => {
     const limit = Math.max(1, Number(req.query.pageSize) || 10);
     const skip = (page - 1) * limit;
 
-    // Fetch paginated data and total count
+    // Fetchign paginated data and total count
     const [genres, totalItems] = await Promise.all([
       GenreRepo.getAllGenres({ skip, limit }),
       GenreRepo.getTotalGenreCount(),

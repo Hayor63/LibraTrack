@@ -38,7 +38,7 @@ const sendEmail = async ({
   try {
     const transporter = nodemailer.createTransport({
       host: config.get<string>("smtpHost"),
-      port: config.get<number>("brevoPort"), // Check if this is the correct SMTP port
+      port: config.get<number>("brevoPort"), 
       auth: {
         user: config.get<string>("userMailLogin"),
         pass: config.get<string>("brevoMailkey"),
@@ -62,7 +62,7 @@ const sendEmail = async ({
 
     return { success: true, msg: "Email sent successfully" };
   } catch (error) {
-    console.error("Error sending email:", error); // Log the error details
+    console.error("Error sending email:", error); 
     return { success: false, msg: "Failed to send email" };
   }
 };

@@ -17,15 +17,15 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Extract query params
+    // Extracting query params
     const { pageNumber, pageSize, sortField, sortType, search, userId, ...restFilters } = req.query;
 
-    // Build filter object for reservations
+    // Building filter object for reservations
     let filter = {
-      ...restFilters, // Additional filters like status, date ranges, etc.
+      ...restFilters, 
     };
 
-    // Access control logic:
+    // Accessinig control logic:
     if (req.user.role === "admin") {
       // Admins can filter by userId if provided
       if (userId) {
@@ -37,12 +37,12 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
       filter.userId = req.user._id;
     }
 
-    // Set pagination parameters
+    // Setting pagination parameters
     const page = Math.max(1, Number(pageNumber) || 1);
     const limit = Math.max(1, Number(pageSize) || 10);
     const skip = (page - 1) * limit;
 
-    // Build sort logic based on query parameters
+    // Building sort logic based on query parameters
     const sortLogic =
       sortField && sortType
         ? {
@@ -50,7 +50,7 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
           }
         : undefined;
 
-    // Fetch paginated reservations
+    // Fetching paginated reservations
     const { data: reservations, totalItems } = await BookReservationRepo.getAllReservations({
       pageNumber: page,
       pageSize: limit,
@@ -59,12 +59,12 @@ const getAllReservationHandler = async (req: AuthenticatedRequest, res: Response
       sortLogic,
     });
 
-    // Handle the case where no reservations are found
+    // Handling the case where no reservations are found
     if (!reservations || reservations.length === 0) {
       return APIResponse.error("No reservations found", 404).send(res);
     }
 
-    // Respond with successful data and pagination details
+
     return APIResponse.success(
       {
         message: "Reservations retrieved successfully",

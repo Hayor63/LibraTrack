@@ -19,34 +19,34 @@ const updateReviewHandler = async (
     const updatedData = req.body;  
     const userId = req.user?._id;  
 
-    // Check if the user is authenticated
+    // Checking if the user is authenticated
     if (!userId) {
       return APIResponse.error("User not authenticated", 401).send(res);
     }
 
-    // Validate if ID is a valid MongoDB ObjectId
+    // Validating if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Review ID", 400).send(res);
     }
 
-    // Ensure that update data is not empty
+    // Ensuring that update data is not empty
     if (!updatedData || Object.keys(updatedData).length === 0) {
       return APIResponse.error("No update data provided", 400).send(res);
     }
 
-    // Retrieve the review to check if the logged-in user is allowed to update it
+    // Retrieving the review to check if the logged-in user is allowed to update it
     const review = await RatingAndReviewsRepo.findById(id);
 
     if (!review) {
       return APIResponse.error("Review not found", 404).send(res);
     }
 
-    // Check if the logged-in user is the creator of the review or an admin
+    // Checking if the logged-in user is the creator of the review or an admin
     if (review.userId.toString() !== userId.toString() && !req.isAdmin) {
       return APIResponse.error("You are not authorized to update this review", 403).send(res);
     }
 
-    // Proceed to update the review if authorized
+    // Then Proceed to update the review if authorized
     const updatedReview = await RatingAndReviewsRepo.updateReviews(id, updatedData);
     
     return APIResponse.success(

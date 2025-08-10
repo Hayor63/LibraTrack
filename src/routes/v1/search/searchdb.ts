@@ -7,7 +7,7 @@ interface AuthenticatedRequest extends Request {
   user?: { id: string };
 }
 
-// Define the expected structure of search query parameters
+// Defining the expected structure of search query parameters
 interface SearchQuery {
   q: string; 
   page?: string; 
@@ -16,26 +16,26 @@ interface SearchQuery {
   categoryId?: string; 
 }
 
-// Main search handler for books in the database
+
 const searchDbHandler = async (
   req: AuthenticatedRequest & { query: SearchQuery },
   res: Response
 ) => {
   try {
-    // Destructure and assign default values from the query
+    // Destructuring and assigning default values from the query
     const { q, page = "1", limit = "10", genreId, categoryId } = req.query;
 
-    // Make sure a search term was provided
+    // Making sure a search term was provided
     if (!q) {
       return APIResponse.error("Search parameter is missing", 400).send(res);
     }
 
-    // Convert page and limit to numbers
+    // Converting  page and limit to numbers
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    // Convert the search query into individual terms
+    // Converting the search query into individual terms
     const searchTerms = q
       .split(",")
       .map((term) => term.trim()) 
@@ -55,7 +55,7 @@ const searchDbHandler = async (
         },
       ],
     };
-    // Common aggregation steps 
+
     const pipeline = [
       // Joining genre data from genres collection
       {
@@ -84,8 +84,8 @@ const searchDbHandler = async (
     ];
 
     // Running two parallel queries:
-    // 1. Get matching books for the current page
-    // 2. Get total count of matching books
+    // 1. Getting matching books for the current page
+    // 2. Getting total count of matching books
     const [bookResult, totalCountResult] = await Promise.all([
       BookCreationModel.aggregate([
         ...pipeline,

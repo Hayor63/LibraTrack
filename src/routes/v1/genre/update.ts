@@ -16,12 +16,12 @@ const updateGenreHandler = async (
     const { id } = req.params;
     const updatedData = req.body;
 
-    // Validate if ID is a valid MongoDB ObjectId
+    // Validating if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return APIResponse.error("Invalid Genre ID", 400).send(res);
     }
 
-    // Ensure that update data is not empty
+    // Ensuring that update data is not empty
     if (!updatedData || Object.keys(updatedData).length === 0) {
       return APIResponse.error("No update data provided", 400).send(res);
     }
