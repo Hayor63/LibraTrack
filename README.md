@@ -26,7 +26,7 @@ The Library Management App Backend is designed to manage core library operations
 ## API Documentation
 
 This project includes interactive API documentation using Swagger.
-- 📘 View the Swagger UI at: http://localhost:<port>/api-docs
+- 📘 View the Swagger UI at:https://libratrack-p3li.onrender.com/api-docs
 
 ## Setup
 
