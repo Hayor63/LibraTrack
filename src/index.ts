@@ -26,7 +26,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:8000",
+      url: "https://libratrack-p3li.onrender.com",
       description: "Development Server",
     },
   ],
